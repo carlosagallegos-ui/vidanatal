@@ -1,0 +1,53 @@
+{
+  "name": "DiarioSintomas",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "fecha": {
+      "type": "string",
+      "format": "date"
+    },
+    "hora": {
+      "type": "string"
+    },
+    "semanas_gestacion": {
+      "type": "number"
+    },
+    "sintomas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "descripcion": {
+      "type": "string"
+    },
+    "intensidad": {
+      "type": "number"
+    },
+    "es_alarma": {
+      "type": "boolean",
+      "default": false
+    },
+    "compartido_medico": {
+      "type": "boolean",
+      "default": false
+    },
+    "estado_animo": {
+      "type": "string",
+      "enum": [
+        "muy_bien",
+        "bien",
+        "regular",
+        "mal",
+        "muy_mal"
+      ]
+    }
+  },
+  "required": [
+    "perfil_id",
+    "fecha"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "NotasConsulta",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "fecha_creacion": {
+      "type": "string",
+      "format": "date"
+    },
+    "texto": {
+      "type": "string"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": [
+        "pregunta",
+        "sintoma",
+        "duda",
+        "recordatorio",
+        "otro"
+      ]
+    },
+    "resuelta": {
+      "type": "boolean",
+      "default": false
+    },
+    "prioridad": {
+      "type": "string",
+      "enum": [
+        "alta",
+        "media",
+        "baja"
+      ]
+    }
+  },
+  "required": [
+    "perfil_id",
+    "texto"
+  ]
+}

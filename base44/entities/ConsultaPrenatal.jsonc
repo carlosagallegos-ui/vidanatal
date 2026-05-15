@@ -1,0 +1,68 @@
+{
+  "name": "ConsultaPrenatal",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "fecha": {
+      "type": "string",
+      "format": "date"
+    },
+    "semanas_gestacion": {
+      "type": "number"
+    },
+    "dias_gestacion": {
+      "type": "number"
+    },
+    "peso_kg": {
+      "type": "number"
+    },
+    "presion_sistolica": {
+      "type": "number"
+    },
+    "presion_diastolica": {
+      "type": "number"
+    },
+    "altura_uterina_cm": {
+      "type": "number"
+    },
+    "frecuencia_cardiaca_fetal": {
+      "type": "number"
+    },
+    "movimientos_fetales": {
+      "type": "string",
+      "enum": [
+        "presentes",
+        "reducidos",
+        "ausentes"
+      ]
+    },
+    "edema": {
+      "type": "string",
+      "enum": [
+        "ausente",
+        "leve",
+        "moderado",
+        "severo"
+      ]
+    },
+    "presentacion_fetal": {
+      "type": "string"
+    },
+    "notas_clinicas": {
+      "type": "string"
+    },
+    "tipo_registro": {
+      "type": "string",
+      "enum": [
+        "consulta",
+        "automedicion"
+      ]
+    }
+  },
+  "required": [
+    "perfil_id",
+    "fecha"
+  ]
+}

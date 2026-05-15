@@ -4,6 +4,10 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+      fontFamily: {
+        nunito: ['Nunito', 'sans-serif'],
+        'nunito-sans': ['Nunito Sans', 'sans-serif'],
+      },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',

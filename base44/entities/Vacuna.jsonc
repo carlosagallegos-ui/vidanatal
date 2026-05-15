@@ -1,0 +1,57 @@
+{
+  "name": "Vacuna",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "nombre_vacuna": {
+      "type": "string"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "Td",
+        "Tdpa",
+        "Influenza",
+        "Hepatitis_B",
+        "otra"
+      ]
+    },
+    "semana_recomendada_inicio": {
+      "type": "number"
+    },
+    "semana_recomendada_fin": {
+      "type": "number"
+    },
+    "fecha_aplicacion": {
+      "type": "string",
+      "format": "date"
+    },
+    "dosis": {
+      "type": "string"
+    },
+    "lote": {
+      "type": "string"
+    },
+    "unidad_medica": {
+      "type": "string"
+    },
+    "estado": {
+      "type": "string",
+      "enum": [
+        "pendiente",
+        "aplicada",
+        "rechazada"
+      ]
+    },
+    "proxima_dosis_fecha": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "perfil_id",
+    "nombre_vacuna"
+  ]
+}

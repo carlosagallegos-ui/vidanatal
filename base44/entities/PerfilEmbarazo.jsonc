@@ -1,0 +1,84 @@
+{
+  "name": "PerfilEmbarazo",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string"
+    },
+    "fecha_nacimiento": {
+      "type": "string",
+      "format": "date"
+    },
+    "fecha_ultima_menstruacion": {
+      "type": "string",
+      "format": "date"
+    },
+    "fecha_probable_parto": {
+      "type": "string",
+      "format": "date"
+    },
+    "metodo_calculo": {
+      "type": "string",
+      "enum": [
+        "FUM",
+        "FPP",
+        "ultrasonido"
+      ]
+    },
+    "numero_gestas": {
+      "type": "number"
+    },
+    "partos_previos": {
+      "type": "number"
+    },
+    "cesareas_previas": {
+      "type": "number"
+    },
+    "abortos_previos": {
+      "type": "number"
+    },
+    "grupo_sanguineo": {
+      "type": "string"
+    },
+    "rh": {
+      "type": "string",
+      "enum": [
+        "positivo",
+        "negativo"
+      ]
+    },
+    "alergias": {
+      "type": "string"
+    },
+    "enfermedades_previas": {
+      "type": "string"
+    },
+    "medicamentos": {
+      "type": "string"
+    },
+    "talla_cm": {
+      "type": "number"
+    },
+    "peso_pregestacional": {
+      "type": "number"
+    },
+    "nivel_riesgo": {
+      "type": "string",
+      "enum": [
+        "bajo",
+        "medio",
+        "alto"
+      ]
+    },
+    "codigo_medico": {
+      "type": "string"
+    },
+    "activo": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "nombre"
+  ]
+}

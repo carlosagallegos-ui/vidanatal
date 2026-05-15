@@ -1,0 +1,65 @@
+{
+  "name": "EstudioLaboratorio",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "nombre_estudio": {
+      "type": "string"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": [
+        "laboratorio",
+        "gabinete",
+        "ultrasonido",
+        "otro"
+      ]
+    },
+    "trimestre_recomendado": {
+      "type": "number"
+    },
+    "semana_recomendada": {
+      "type": "number"
+    },
+    "fecha_realizacion": {
+      "type": "string",
+      "format": "date"
+    },
+    "resultado_texto": {
+      "type": "string"
+    },
+    "resultado_numerico": {
+      "type": "number"
+    },
+    "unidad": {
+      "type": "string"
+    },
+    "valor_referencia_min": {
+      "type": "number"
+    },
+    "valor_referencia_max": {
+      "type": "number"
+    },
+    "estado_resultado": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "alterado",
+        "critico",
+        "pendiente"
+      ]
+    },
+    "archivo_url": {
+      "type": "string"
+    },
+    "notas": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "perfil_id",
+    "nombre_estudio"
+  ]
+}
