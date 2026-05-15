@@ -60,6 +60,9 @@
     },
     "delete": {
       "created_by": "{{user.email}}"
+    },
+    "write": {
+      "created_by": "{{user.email}}"
     }
   }
 }
