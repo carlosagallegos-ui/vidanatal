@@ -49,17 +49,27 @@ export default function Estudios() {
 
   const getEstudioGuardado = (nombre) => estudios.find(e => e.nombre_estudio === nombre);
 
+  const [guardando, setGuardando] = useState(false);
+
   const guardarResultado = async () => {
     if (!perfil || !modalEstudio) return;
+    setGuardando(true);
     const existente = getEstudioGuardado(modalEstudio.nombre);
     const data = {
       perfil_id: perfil.id,
       nombre_estudio: modalEstudio.nombre,
       categoria: modalEstudio.categoria,
       trimestre_recomendado: modalEstudio.trimestre,
-      ...form,
+      semana_recomendada: modalEstudio.semana || null,
+      valor_referencia_min: modalEstudio.ref_min || null,
+      valor_referencia_max: modalEstudio.ref_max || null,
+      fecha_realizacion: form.fecha_realizacion || null,
+      resultado_texto: form.resultado_texto || null,
+      resultado_numerico: form.resultado_numerico ? parseFloat(form.resultado_numerico) : null,
+      notas: form.notas || null,
+      estado_resultado: form.estado_resultado,
+      archivo_url: form.archivo_url || null,
     };
-    if (form.resultado_numerico) data.resultado_numerico = parseFloat(form.resultado_numerico);
     if (existente) {
       await base44.entities.EstudioLaboratorio.update(existente.id, data);
     } else {
@@ -67,6 +77,7 @@ export default function Estudios() {
     }
     const est = await base44.entities.EstudioLaboratorio.list('-fecha_realizacion', 50);
     setEstudios(est);
+    setGuardando(false);
     setModalEstudio(null);
   };
 
@@ -188,6 +199,11 @@ export default function Estudios() {
                 <textarea placeholder="Escribe el resultado..." value={form.resultado_texto} onChange={e => setForm(f => ({ ...f, resultado_texto: e.target.value }))}
                   className="w-full bg-muted rounded-xl px-3 py-2 text-sm border border-border focus:outline-none min-h-[70px] resize-none" />
               </div>
+              <div className="col-span-2">
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Notas adicionales</label>
+                <textarea placeholder="Observaciones, indicaciones del médico..." value={form.notas} onChange={e => setForm(f => ({ ...f, notas: e.target.value }))}
+                  className="w-full bg-muted rounded-xl px-3 py-2 text-sm border border-border focus:outline-none min-h-[60px] resize-none" />
+              </div>
             </div>
             <label className={cn('flex items-center gap-2 border-2 border-dashed border-border rounded-xl p-3 cursor-pointer', subiendo && 'opacity-50')}>
               <Upload className="w-4 h-4 text-muted-foreground" />
@@ -199,8 +215,8 @@ export default function Estudios() {
                 <FileText className="w-4 h-4" /> Ver documento adjunto
               </a>
             )}
-            <button onClick={guardarResultado} className="w-full gradient-rose text-white py-3 rounded-xl font-bold shadow-md shadow-primary/20">
-              Guardar resultado
+            <button onClick={guardarResultado} disabled={guardando} className="w-full gradient-rose text-white py-3 rounded-xl font-bold shadow-md shadow-primary/20 disabled:opacity-60">
+              {guardando ? 'Guardando...' : 'Guardar resultado'}
             </button>
           </div>
         </div>
