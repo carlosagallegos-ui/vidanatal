@@ -168,7 +168,7 @@ export default function Estudios() {
       {/* Modal captura resultado */}
       {modalEstudio && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end px-4 pb-20">
-          <div className="bg-card rounded-3xl p-5 w-full max-w-lg mx-auto shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-card rounded-3xl p-5 pb-8 w-full max-w-lg mx-auto shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-foreground">{modalEstudio.nombre}</h3>
               <button onClick={() => setModalEstudio(null)} className="text-muted-foreground text-xl leading-none">×</button>
