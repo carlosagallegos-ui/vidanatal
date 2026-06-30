@@ -169,9 +169,15 @@ export default function Estudios() {
       {modalEstudio && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end px-4 pb-20">
           <div className="bg-card rounded-3xl p-5 pb-8 w-full max-w-lg mx-auto shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-foreground">{modalEstudio.nombre}</h3>
-              <button onClick={() => setModalEstudio(null)} className="text-muted-foreground text-xl leading-none">×</button>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-bold text-foreground text-sm flex-1 leading-snug">{modalEstudio.nombre}</h3>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={guardarResultado} disabled={guardando}
+                  className="gradient-rose text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm disabled:opacity-60 whitespace-nowrap">
+                  {guardando ? '...' : 'Guardar'}
+                </button>
+                <button onClick={() => setModalEstudio(null)} className="text-muted-foreground text-xl leading-none">×</button>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
@@ -215,9 +221,7 @@ export default function Estudios() {
                 <FileText className="w-4 h-4" /> Ver documento adjunto
               </a>
             )}
-            <button onClick={guardarResultado} disabled={guardando} className="w-full gradient-rose text-white py-3 rounded-xl font-bold shadow-md shadow-primary/20 disabled:opacity-60">
-              {guardando ? 'Guardando...' : 'Guardar resultado'}
-            </button>
+
           </div>
         </div>
       )}
