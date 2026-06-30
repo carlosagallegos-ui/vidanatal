@@ -72,7 +72,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="px-4 pt-6 pb-4 space-y-5">
+    <div className="px-4 pt-6 pb-24 space-y-5">
       {/* Header */}
       <div className="gradient-rose rounded-3xl p-5 text-white shadow-lg shadow-primary/25 relative overflow-hidden">
         <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full" />

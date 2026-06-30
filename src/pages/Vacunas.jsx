@@ -94,7 +94,7 @@ export default function Vacunas() {
   };
 
   return (
-    <div className="px-4 pt-6 pb-4 space-y-5">
+    <div className="px-4 pt-6 pb-24 space-y-5">
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 gradient-rose rounded-2xl flex items-center justify-center shadow-md shadow-primary/30">
           <Syringe className="w-5 h-5 text-white" />
@@ -182,8 +182,8 @@ export default function Vacunas() {
 
       {/* Modal */}
       {modalVacuna && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end px-4 pb-4">
-          <div className="bg-card rounded-3xl p-5 w-full max-w-lg mx-auto shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end px-4 pb-20">
+          <div className="bg-card rounded-3xl p-5 pb-8 w-full max-w-lg mx-auto shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h3 className="font-bold">Registrar: {modalVacuna.nombre}</h3>
               <button onClick={() => setModalVacuna(null)} className="text-muted-foreground text-xl">×</button>
