@@ -36,6 +36,7 @@ export default function Estudios() {
   const [filtroTrimestre, setFiltroTrimestre] = useState('todos');
   const [form, setForm] = useState({ resultado_texto: '', resultado_numerico: '', fecha_realizacion: '', notas: '', estado_resultado: 'pendiente' });
   const [subiendo, setSubiendo] = useState(false);
+  const [errorArchivo, setErrorArchivo] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -84,10 +85,23 @@ export default function Estudios() {
   const subirArchivo = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const esValido = file.type.startsWith('image/') || file.type === 'application/pdf';
+    if (!esValido) {
+      setForm(f => ({ ...f, archivo_url: '' }));
+      setErrorArchivo('Solo se permiten imágenes o archivos PDF.');
+      e.target.value = '';
+      return;
+    }
+    setErrorArchivo(null);
     setSubiendo(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setForm(f => ({ ...f, archivo_url: file_url }));
-    setSubiendo(false);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setForm(f => ({ ...f, archivo_url: file_url }));
+    } catch {
+      setErrorArchivo('No se pudo subir el archivo. Intenta de nuevo.');
+    } finally {
+      setSubiendo(false);
+    }
   };
 
   const listaFiltrada = filtroTrimestre === 'todos'
@@ -220,6 +234,11 @@ export default function Estudios() {
               <a href={form.archivo_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-primary text-sm font-semibold">
                 <FileText className="w-4 h-4" /> Ver documento adjunto
               </a>
+            )}
+            {errorArchivo && (
+              <p className="text-xs text-red-600 font-semibold flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5" /> {errorArchivo}
+              </p>
             )}
 
           </div>
