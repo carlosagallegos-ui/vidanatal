@@ -1,0 +1,38 @@
+{
+  "name": "ActividadCompletada",
+  "type": "object",
+  "properties": {
+    "perfil_id": {
+      "type": "string"
+    },
+    "identificador": {
+      "type": "string"
+    },
+    "titulo": {
+      "type": "string"
+    },
+    "tipo": {
+      "type": "string"
+    },
+    "fecha_completada": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "perfil_id",
+    "identificador"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "created_by": "{{user.email}}"
+    },
+    "update": {
+      "created_by": "{{user.email}}"
+    },
+    "delete": {
+      "created_by": "{{user.email}}"
+    }
+  }
+}

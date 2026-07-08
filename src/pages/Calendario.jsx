@@ -33,11 +33,41 @@ const DETECCIONES = [
 export default function Calendario() {
   const [perfil, setPerfil] = useState(null);
   const [semanaFiltro, setSemanaFiltro] = useState('todas');
+  const [completadas, setCompletadas] = useState([]);
+
+  const cargarCompletadas = async (perfilId) => {
+    const res = await base44.entities.ActividadCompletada.filter({ perfil_id: perfilId });
+    setCompletadas(res);
+  };
 
   useEffect(() => {
     base44.entities.PerfilEmbarazo.filter({ activo: true }, '-created_date', 1)
-      .then(perfiles => { if (perfiles.length > 0) setPerfil(perfiles[0]); });
+      .then(perfiles => {
+        if (perfiles.length > 0) {
+          setPerfil(perfiles[0]);
+          cargarCompletadas(perfiles[0].id);
+        }
+      });
   }, []);
+
+  const identificadorDe = (a) => `${a.origen}_${a.titulo}_${a.semana_inicio}`;
+
+  const toggleCompletada = async (accion) => {
+    const id = identificadorDe(accion);
+    const existente = completadas.find(c => c.identificador === id);
+    if (existente) {
+      await base44.entities.ActividadCompletada.delete(existente.id);
+    } else {
+      await base44.entities.ActividadCompletada.create({
+        perfil_id: perfil.id,
+        identificador: id,
+        titulo: accion.titulo,
+        tipo: accion.tipo_display,
+        fecha_completada: new Date().toISOString().split('T')[0],
+      });
+    }
+    cargarCompletadas(perfil.id);
+  };
 
   const eg = perfil ? calcularEdadGestacional(perfil.fecha_ultima_menstruacion) : null;
   const semanasActuales = eg?.semanas || 0;
@@ -49,9 +79,9 @@ export default function Calendario() {
   ].sort((a, b) => a.semana_inicio - b.semana_inicio);
 
   const filtradas = semanaFiltro === 'pendientes'
-    ? todasAcciones.filter(a => a.semana_fin >= semanasActuales)
+    ? todasAcciones.filter(a => !completadas.some(c => c.identificador === identificadorDe(a)) && a.semana_fin >= semanasActuales)
     : semanaFiltro === 'pasadas'
-    ? todasAcciones.filter(a => a.semana_fin < semanasActuales)
+    ? todasAcciones.filter(a => completadas.some(c => c.identificador === identificadorDe(a)) || a.semana_fin < semanasActuales)
     : todasAcciones;
 
   return (
@@ -88,33 +118,48 @@ export default function Calendario() {
           const config = TIPO_CONFIG[accion.tipo_display] || TIPO_CONFIG.consulta;
           const Icon = config.icon;
           const esActual = semanasActuales >= accion.semana_inicio && semanasActuales <= accion.semana_fin;
-          const pasada = accion.semana_fin < semanasActuales;
+          const completada = completadas.some(c => c.identificador === identificadorDe(accion));
 
           return (
             <div key={i} className={cn(
               'bg-card rounded-2xl border p-4 transition-all duration-200',
-              esActual ? 'border-primary/40 shadow-md shadow-primary/10' : 'border-border',
-              pasada && 'opacity-60'
+              completada ? 'border-emerald-200 bg-emerald-50/50' :
+              esActual ? 'border-primary/40 shadow-md shadow-primary/10' : 'border-border'
             )}>
               <div className="flex items-start gap-3">
-                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0', config.color)}>
-                  <Icon className="w-5 h-5" />
+                <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0', completada ? 'bg-emerald-100' : config.color)}>
+                  {completada ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : <Icon className="w-5 h-5" />}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="text-xs font-bold bg-muted px-2 py-0.5 rounded-lg text-muted-foreground">
                       Sem {accion.semana_inicio}{accion.semana_inicio !== accion.semana_fin ? `-${accion.semana_fin}` : ''}
                     </span>
-                    {esActual && (
+                    {esActual && !completada && (
                       <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-lg">
                         ¡Ahora!
                       </span>
                     )}
-                    {pasada && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                    {completada && (
+                      <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg">
+                        ✓ Hecha
+                      </span>
+                    )}
                   </div>
-                  <p className="font-bold text-sm text-foreground">{accion.titulo}</p>
+                  <p className={cn('font-bold text-sm text-foreground', completada && 'line-through text-muted-foreground')}>{accion.titulo}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{accion.descripcion}</p>
                 </div>
+                <button
+                  onClick={() => toggleCompletada(accion)}
+                  className={cn(
+                    'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all',
+                    completada
+                      ? 'bg-emerald-500 border-emerald-500 text-white'
+                      : 'border-border hover:border-primary hover:bg-primary/5'
+                  )}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
           );
