@@ -17,6 +17,12 @@
     "fecha_completada": {
       "type": "string",
       "format": "date"
+    },
+    "unidad_medica": {
+      "type": "string"
+    },
+    "notas": {
+      "type": "string"
     }
   },
   "required": [

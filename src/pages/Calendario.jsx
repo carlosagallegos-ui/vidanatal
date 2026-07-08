@@ -34,6 +34,9 @@ export default function Calendario() {
   const [perfil, setPerfil] = useState(null);
   const [semanaFiltro, setSemanaFiltro] = useState('todas');
   const [completadas, setCompletadas] = useState([]);
+  const [modalAccion, setModalAccion] = useState(null);
+  const [form, setForm] = useState({ fecha_completada: '', unidad_medica: '', notas: '' });
+  const [guardando, setGuardando] = useState(false);
 
   const cargarCompletadas = async (perfilId) => {
     const res = await base44.entities.ActividadCompletada.filter({ perfil_id: perfilId });
@@ -52,21 +55,48 @@ export default function Calendario() {
 
   const identificadorDe = (a) => `${a.origen}_${a.titulo}_${a.semana_inicio}`;
 
-  const toggleCompletada = async (accion) => {
-    const id = identificadorDe(accion);
+  const abrirModal = (accion) => {
+    const existente = completadas.find(c => c.identificador === identificadorDe(accion));
+    setModalAccion(accion);
+    setForm({
+      fecha_completada: existente?.fecha_completada || new Date().toISOString().split('T')[0],
+      unidad_medica: existente?.unidad_medica || '',
+      notas: existente?.notas || '',
+    });
+  };
+
+  const guardarActividad = async () => {
+    if (!perfil || !modalAccion) return;
+    setGuardando(true);
+    const id = identificadorDe(modalAccion);
     const existente = completadas.find(c => c.identificador === id);
+    const data = {
+      perfil_id: perfil.id,
+      identificador: id,
+      titulo: modalAccion.titulo,
+      tipo: modalAccion.tipo_display,
+      fecha_completada: form.fecha_completada,
+      unidad_medica: form.unidad_medica || null,
+      notas: form.notas || null,
+    };
+    if (existente) {
+      await base44.entities.ActividadCompletada.update(existente.id, data);
+    } else {
+      await base44.entities.ActividadCompletada.create(data);
+    }
+    await cargarCompletadas(perfil.id);
+    setGuardando(false);
+    setModalAccion(null);
+  };
+
+  const eliminarActividad = async () => {
+    if (!perfil || !modalAccion) return;
+    const existente = completadas.find(c => c.identificador === identificadorDe(modalAccion));
     if (existente) {
       await base44.entities.ActividadCompletada.delete(existente.id);
-    } else {
-      await base44.entities.ActividadCompletada.create({
-        perfil_id: perfil.id,
-        identificador: id,
-        titulo: accion.titulo,
-        tipo: accion.tipo_display,
-        fecha_completada: new Date().toISOString().split('T')[0],
-      });
+      await cargarCompletadas(perfil.id);
     }
-    cargarCompletadas(perfil.id);
+    setModalAccion(null);
   };
 
   const eg = perfil ? calcularEdadGestacional(perfil.fecha_ultima_menstruacion) : null;
@@ -150,21 +180,62 @@ export default function Calendario() {
                   <p className="text-xs text-muted-foreground mt-0.5">{accion.descripcion}</p>
                 </div>
                 <button
-                  onClick={() => toggleCompletada(accion)}
+                  onClick={() => abrirModal(accion)}
                   className={cn(
-                    'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all',
+                    'flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all',
                     completada
-                      ? 'bg-emerald-500 border-emerald-500 text-white'
-                      : 'border-border hover:border-primary hover:bg-primary/5'
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-primary text-white shadow-sm'
                   )}
                 >
-                  <CheckCircle2 className="w-4 h-4" />
+                  {completada ? 'Editar' : 'Marcar'}
                 </button>
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Modal de captura */}
+      {modalAccion && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end px-4 pb-20">
+          <div className="bg-card rounded-3xl p-5 pb-8 w-full max-w-lg mx-auto shadow-2xl space-y-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-bold text-foreground text-sm flex-1 leading-snug">{modalAccion.titulo}</h3>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {completadas.some(c => c.identificador === identificadorDe(modalAccion)) && (
+                  <button onClick={eliminarActividad} className="text-red-500 text-xs font-bold px-2 py-1.5 rounded-xl hover:bg-red-50">
+                    Eliminar
+                  </button>
+                )}
+                <button onClick={guardarActividad} disabled={guardando}
+                  className="gradient-rose text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm disabled:opacity-60 whitespace-nowrap">
+                  {guardando ? '...' : 'Guardar'}
+                </button>
+                <button onClick={() => setModalAccion(null)} className="text-muted-foreground text-xl leading-none">×</button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Fecha de realización</label>
+                <input type="date" value={form.fecha_completada} onChange={e => setForm(f => ({ ...f, fecha_completada: e.target.value }))}
+                  className="w-full bg-muted rounded-xl px-3 py-2 text-sm border border-border focus:outline-none" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Unidad médica</label>
+                <input type="text" placeholder="Centro de salud, clínica, médico..." value={form.unidad_medica} onChange={e => setForm(f => ({ ...f, unidad_medica: e.target.value }))}
+                  className="w-full bg-muted rounded-xl px-3 py-2 text-sm border border-border focus:outline-none" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground block mb-1">Notas</label>
+                <textarea placeholder="Observaciones, resultados, indicaciones..." value={form.notas} onChange={e => setForm(f => ({ ...f, notas: e.target.value }))}
+                  className="w-full bg-muted rounded-xl px-3 py-2 text-sm border border-border focus:outline-none min-h-[70px] resize-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
